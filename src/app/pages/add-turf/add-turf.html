@@ -1,0 +1,216 @@
+<div class="panel">
+  <div class="mb-5 flex items-center justify-between">
+    <h5 class="text-lg font-semibold dark:text-white-light">Add New Turf</h5>
+  </div>
+  <div class="mb-5">
+    <form [formGroup]="turfForm" (ngSubmit)="submitTurf()" class="space-y-5">
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div>
+          <label for="turf_name">Turf Name:</label>
+          <input
+            id="turf_name"
+            formControlName="turf_name"
+            type="text"
+            placeholder="e.g., Green Meadows Turf"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('turf_name')?.touched && turfForm.get('turf_name')?.invalid" class="text-xs text-danger">
+            Turf name is required (max 100 chars).
+          </div>
+        </div>
+        <div>
+          <label for="address">Address:</label>
+          <input
+            id="address"
+            formControlName="address"
+            type="text"
+            placeholder="e.g., 123 Sports Lane"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('address')?.touched && turfForm.get('address')?.invalid" class="text-xs text-danger">
+            Address is required (max 250 chars).
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="map_link">Google Map Location URL:</label>
+        <input
+          id="map_link"
+          formControlName="map_link"
+          type="url"
+          placeholder="Paste Google Maps URL"
+          class="form-input"
+        />
+        <div *ngIf="turfForm.get('map_link')?.touched && turfForm.get('map_link')?.hasError('required')" class="text-xs text-danger">
+          Google Maps URL is required.
+        </div>
+        <div *ngIf="turfForm.get('map_link')?.touched && turfForm.get('map_link')?.hasError('pattern')" class="text-xs text-danger">
+          Please enter a valid Google Maps URL.
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div>
+          <label for="city">City:</label>
+          <input
+            id="city"
+            formControlName="city"
+            type="text"
+            placeholder="e.g., Bengaluru"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('city')?.touched && turfForm.get('city')?.invalid" class="text-xs text-danger">
+            City is required (max 50 chars).
+          </div>
+        </div>
+        <div>
+          <label for="state">State:</label>
+          <input
+            id="state"
+            formControlName="state"
+            type="text"
+            placeholder="e.g., Karnataka"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('state')?.touched && turfForm.get('state')?.invalid" class="text-xs text-danger">
+            State is required (max 50 chars).
+          </div>
+        </div>
+        <div>
+          <label for="pincode">Pincode:</label>
+          <input
+            id="pincode"
+            formControlName="pincode"
+            type="text"
+            placeholder="e.g., 560001"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('pincode')?.touched && turfForm.get('pincode')?.invalid" class="text-xs text-danger">
+            Pincode is required and must be 6 digits.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div>
+          <label for="opening_time">Opening Time:</label>
+          <input
+            id="opening_time"
+            formControlName="opening_time"
+            type="time"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('opening_time')?.touched && turfForm.get('opening_time')?.invalid" class="text-xs text-danger">
+            Opening time is required.
+          </div>
+        </div>
+        <div>
+          <label for="closing_time">Closing Time:</label>
+          <input
+            id="closing_time"
+            formControlName="closing_time"
+            type="time"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('closing_time')?.touched && turfForm.get('closing_time')?.invalid" class="text-xs text-danger">
+            Closing time is required.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div>
+          <label for="slot_duration">Slot Duration (minutes):</label>
+          <input
+            id="slot_duration"
+            formControlName="slot_duration"
+            type="text"
+            placeholder="e.g., 60"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('slot_duration')?.touched && turfForm.get('slot_duration')?.invalid" class="text-xs text-danger">
+            Slot duration is required and must be a number.
+          </div>
+        </div>
+        <div>
+          <label for="buffer_minutes">Buffer Time (minutes):</label>
+          <input
+            id="buffer_minutes"
+            formControlName="buffer_minutes"
+            type="text"
+            placeholder="e.g., 10"
+            class="form-input"
+          />
+          <div *ngIf="turfForm.get('buffer_minutes')?.touched && turfForm.get('buffer_minutes')?.invalid" class="text-xs text-danger">
+            Buffer time is required and must be a number.
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="turf_image">Turf Image:</label>
+        <input
+          id="turf_image"
+          type="file"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          class="form-input p-0 file:border-0 file:bg-primary/90 file:px-4 file:py-2 file:font-semibold file:text-white file:hover:bg-primary ltr:file:mr-5 rtl:file:ml-5"
+        />
+        <div *ngIf="turfForm.get('turf_image')?.touched && turfForm.get('turf_image')?.invalid" class="text-xs text-danger">
+          Turf image is required.
+        </div>
+        <div *ngIf="selectedFileName" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Selected file: {{ selectedFileName }}
+        </div>
+      </div>
+
+      <div>
+        <label>Amenities:</label>
+        <div class="flex">
+          <input
+            #amenityInput
+            type="text"
+            placeholder="Add an amenity (e.g., Parking, Washrooms)"
+            class="form-input ltr:rounded-r-none rtl:rounded-l-none"
+          />
+          <button
+            type="button"
+            class="btn btn-primary ltr:rounded-l-none rtl:rounded-r-none"
+            (click)="addAmenity(amenityInput.value); amenityInput.value = ''"
+          >
+            Add
+          </button>
+        </div>
+        <div *ngIf="amenities.length > 0" class="mt-2 flex flex-wrap gap-2">
+          <span
+            *ngFor="let amenityControl of amenities.controls; let i = index"
+            class="badge badge-outline-primary"
+          >
+            {{ amenityControl.value }}
+            <button
+              type="button"
+              class="ms-2 font-bold text-danger hover:text-danger/80"
+              (click)="removeAmenity(i)"
+            >
+              x
+            </button>
+          </span>
+        </div>
+        <div *ngIf="amenities.touched && amenities.invalid" class="text-xs text-danger">
+          At least one amenity is required.
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          [disabled]="turfForm.invalid"
+          class="btn btn-primary !mt-6"
+        >
+          Create Turf
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

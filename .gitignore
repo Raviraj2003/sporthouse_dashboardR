@@ -1,0 +1,46 @@
+### Angular ###
+# /dist
+/tmp
+/out-tsc
+/.angular/cache
+/bazel-out
+
+### Node ###
+/node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+### IDE ###
+/.idea
+/.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+### Environment ###
+.env
+.env.local
+.env.*.local
+
+### Testing ###
+/coverage
+*.lcov
+/junit.xml
+
+### Logs ###
+logs
+*.log
+
+### OS ###
+.DS_Store
+Thumbs.db
+desktop.ini
+
+### Misc ###
+*.zip
+*.tar.gz
+*.rarnode_modules

@@ -1,0 +1,132 @@
+<div class="panel">
+  <!-- Turf & Sport Selection -->
+  <div class="flex gap-4 mb-4">
+    <!-- Turf selection -->
+    <div>
+      <label class="form-label">Turf</label>
+      <select
+        class="form-select"
+        [(ngModel)]="selectedTurf"
+        (ngModelChange)="onTurfChange($event)"
+      >
+        <option value="">-- Choose Turf --</option>
+        <option *ngFor="let turf of turfs" [ngValue]="turf.turf_id">
+          {{ turf.turf_name }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Sport selection -->
+    <div>
+      <label class="form-label">Sport</label>
+      <select
+        class="form-select"
+        [(ngModel)]="selectedSport"
+        (ngModelChange)="onSportChange()"
+        [disabled]="sports.length === 0"
+      >
+        <option value="">-- Choose Sport --</option>
+        <option *ngFor="let sport of sports" [ngValue]="sport.sport_id || sport.id">
+          {{ sport.sport_name }}
+        </option>
+      </select>
+      <div *ngIf="selectedTurf && sports.length === 0" class="text-xs text-warning mt-1">
+        No sports available for this turf.
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekday buttons -->
+  <div class="flex flex-wrap items-center gap-2 mb-4">
+    <button
+      *ngFor="let d of weekdays"
+      type="button"
+      class="btn btn-sm"
+      [ngClass]="{'btn-primary': day === d, 'btn-outline-primary': day !== d}"
+      (click)="changeDay(d)"
+    >
+      {{ d }}
+    </button>
+  </div>
+
+  <h2 class="text-xl">{{ day }} Slots</h2>
+
+  <div class="panel mt-5 overflow-hidden border-0 p-0">
+    <div class="table-responsive" *ngIf="slots.length > 0; else noSlotsFound">
+      <table class="table-striped table-hover w-full">
+        <thead>
+          <tr>
+            <th>Slot ID</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Price (INR)</th>
+            <th>Status</th>
+            <th class="!text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let slot of slots" [ngClass]="{'bg-red-100': slot.active_status === 'N'}">
+            <td>{{ slot.slot_id }}</td>
+            <td>{{ slot.start_time }}</td>
+            <td>{{ slot.end_time }}</td>
+            <td>{{ slot.price | currency:'INR':'symbol':'1.0-0' }}</td>
+            <td>
+              <select class="form-select form-select-sm" [ngModel]="slot.active_status" (ngModelChange)="changeStatus(slot, $event)">
+                <option value="Y">Active</option>
+                <option value="N">Inactive</option>
+              </select>
+            </td>
+            <td class="text-center">
+              <button type="button" class="btn btn-sm btn-outline-primary flex items-center gap-1 mx-auto" (click)="openEditModal(slot)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                  <path d="M12.854.146a.5.5 0 0 1 .11.638l-.057.07-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10a.5.5 0 0 1 .707 0z"/>
+                </svg>
+                Edit
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noSlotsFound>
+      <div class="p-4 text-center text-gray-500">
+        No slots available for {{ day }}
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<!-- Edit Slot Price Modal -->
+<ngx-custom-modal #editPriceModal class="no-footer">
+  <ng-template #modalHeader>
+    <div class="!font-medium">Edit Slot Price</div>
+  </ng-template>
+
+  <ng-template #modalBody>
+    <form [formGroup]="priceForm" class="space-y-5" (ngSubmit)="savePrice()">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Current Price</label>
+        <input type="number"
+               class="form-input bg-gray-100 cursor-not-allowed"
+               formControlName="current_price"
+               readonly />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">New Price</label>
+        <input type="number" class="form-input" formControlName="new_price" placeholder="Enter new price" />
+        <div *ngIf="priceForm.get('new_price')?.invalid && priceForm.get('new_price')?.touched"
+             class="text-xs text-danger mt-1">
+          New price is required and must be greater than 0.
+        </div>
+      </div>
+
+      <div class="mt-8 flex items-center justify-end">
+        <button type="button" class="btn btn-outline-danger" (click)="editPriceModal.close()">Cancel</button>
+        <button type="submit" class="btn btn-primary ltr:ml-4 rtl:mr-4" [disabled]="priceForm.invalid">Save</button>
+      </div>
+    </form>
+  </ng-template>
+</ngx-custom-modal>
+        

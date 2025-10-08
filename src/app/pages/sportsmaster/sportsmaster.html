@@ -1,0 +1,133 @@
+<div class="panel">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h2 class="text-xl">Turf Listing</h2>
+    <div class="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+      <div class="flex gap-3">
+        <div>
+          <button type="button" class="btn btn-primary" (click)="openAddSportModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+            Add Sport
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel mt-5 overflow-hidden border-0 p-0">
+    <div class="table-responsive" *ngIf="filteredTurfList.length > 0; else noTurfsFound">
+      <table class="table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Turf Name</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Pincode</th>
+            <th class="!text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let turf of filteredTurfList">
+            <td>{{ turf.turf_name }}</td>
+            <td>{{ turf.address }}</td>
+            <td>{{ turf.city }}</td>
+            <td>{{ turf.state }}</td>
+            <td>{{ turf.pincode }}</td>
+            <td>
+              <div class="flex items-center justify-center gap-4">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-info"
+                  (click)="viewTurfDetails(turf)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.485-.756.994-1.258 1.523C11.603 12.388 9.996 13.5 8 13.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-primary"
+                  (click)="editTurf(turf)"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="deleteTurf(turf)"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noTurfsFound>
+      <div class="p-4 text-center text-gray-500">No turfs found.</div>
+    </ng-template>
+  </div>
+</div>
+
+<ngx-custom-modal #addSportModal class="no-footer">
+  <ng-template #modalHeader>
+    <div class="!font-medium">Add New Sport</div>
+  </ng-template>
+  <ng-template #modalBody>
+    <form [formGroup]="sportForm" class="space-y-5" (ngSubmit)="submitSport()">
+      <div class="mb-3">
+        <label for="turf_id" class="form-label fw-semibold">Select Turf</label>
+        <select id="turf_id" class="form-select" formControlName="turf_id">
+          <option value="">-- Choose Turf --</option>
+          <option *ngFor="let turf of turfs" [value]="turf.turf_id">
+            {{ turf.turf_name }}
+          </option>
+        </select>
+        <div *ngIf="sportForm.get('turf_id')?.invalid && sportForm.get('turf_id')?.touched" class="text-xs text-danger mt-1">
+          Turf is required.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="sport_name" class="form-label fw-semibold">Select Sport</label>
+        <select id="sport_name" class="form-select" formControlName="sport_name">
+          <option value="">-- Choose Sport --</option>
+          <option *ngFor="let sport of availableSports" [value]="sport.name">
+            {{ sport.name }}
+          </option>
+        </select>
+        <div *ngIf="sportForm.get('sport_name')?.invalid && sportForm.get('sport_name')?.touched" class="text-xs text-danger mt-1">
+          Sport is required.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label fw-semibold">Description</label>
+        <textarea
+          id="description"
+          class="form-textarea"
+          rows="3"
+          placeholder="Enter description"
+          formControlName="description"
+        ></textarea>
+        <div *ngIf="sportForm.get('description')?.invalid && sportForm.get('description')?.touched" class="text-xs text-danger mt-1">
+          Description is required.
+        </div>
+      </div>
+
+      <div class="mt-8 flex items-center justify-end">
+        <button type="button" class="btn btn-outline-danger" (click)="addSportModal.close()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary ltr:ml-4 rtl:mr-4" [disabled]="sportForm.invalid">
+          Add Sport
+        </button>
+      </div>
+    </form>
+  </ng-template>
+</ngx-custom-modal>

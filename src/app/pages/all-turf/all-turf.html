@@ -1,0 +1,110 @@
+<div class="panel">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <h2 class="text-xl">All Turfs</h2>
+    <div class="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+      <div class="relative w-full sm:w-auto">
+        <input
+          type="text"
+          class="form-input ltr:pl-9 rtl:pr-9"
+          placeholder="Search Turfs..."
+          [(ngModel)]="turfSearch"
+          (ngModelChange)="searchTurfs()"
+        />
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute ltr:left-2 rtl:right-2 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 pointer-events-none" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel mt-5 overflow-hidden border-0 p-0">
+    <div *ngIf="loading" class="p-4 text-center text-gray-500">
+      <p>Loading turfs...</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="!loading && filteredTurfs.length > 0; else noTurfsFound">
+      <table class="table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Turf Name</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Pincode</th>
+            <th>Distance</th>
+            <th class="!text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let turf of filteredTurfs">
+            <td>
+              <img
+                [src]="turf.image_url || 'assets/r/default-logo.png'"
+                alt="{{ turf.turf_name }}"
+                class="w-24 h-24 object-cover rounded-full"
+              />
+            </td>
+            <td>{{ turf.turf_name }}</td>
+            <td>{{ turf.address }}</td>
+            <td>{{ turf.city }}</td>
+            <td>{{ turf.state }}</td>
+            <td>{{ turf.pincode }}</td>
+            <td>{{ turf.distance || 'N/A' }} km</td>
+            <td>
+              <div class="flex items-center justify-center gap-4">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-info"
+                  (click)="viewTurfDetails(turf)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.485-.756.994-1.258 1.523C11.603 12.388 9.996 13.5 8 13.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-primary"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noTurfsFound>
+      <div class="p-4 text-center text-gray-500">No turfs found.</div>
+    </ng-template>
+  </div>
+</div>
+
+<ngx-custom-modal #turfDetailsModal class="no-footer">
+  <ng-template #modalHeader>
+    <div class="!font-medium">Turf Details</div>
+  </ng-template>
+  <ng-template #modalBody>
+    <div *ngIf="selectedTurf">
+      <p><strong>Name:</strong> {{ selectedTurf.turf_name }}</p>
+      <p><strong>Address:</strong> {{ selectedTurf.address }}</p>
+      <p><strong>City:</strong> {{ selectedTurf.city }}</p>
+      <p><strong>State:</strong> {{ selectedTurf.state }}</p>
+      <p><strong>Pincode:</strong> {{ selectedTurf.pincode }}</p>
+      <p><strong>Distance:</strong> {{ selectedTurf.distance || 'N/A' }} km</p>
+      <p><strong>Image:</strong></p>
+      <img [src]="selectedTurf.image_url || 'assets/r/default-logo.png'" alt="{{ selectedTurf.turf_name }}" class="w-full h-auto mt-2 rounded" />
+    </div>
+  </ng-template>
+  <ng-template #modalFooter>
+    <button type="button" class="btn btn-outline-secondary" (click)="closeTurfDetails()">Close</button>
+  </ng-template>
+</ngx-custom-modal>

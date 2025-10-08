@@ -1,0 +1,99 @@
+<div class="panel">
+  <h5 class="text-lg font-semibold mb-5">Generate New Slots</h5>
+  <form [formGroup]="slotForm" (ngSubmit)="generateSlots()" class="space-y-5">
+
+    <!-- Turf & Sport Selection -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div>
+        <label for="turf_id">Select Turf:</label>
+        <select id="turf_id" formControlName="turf_id" class="form-select">
+          <option value="">-- Choose Turf --</option>
+          <option *ngFor="let turf of turfs" [value]="turf.turf_id">{{ turf.turf_name }}</option>
+        </select>
+      </div>
+      <div>
+        <label for="sport_id">Select Sport:</label>
+        <select id="sport_id" formControlName="sport_id" class="form-select" [disabled]="sports.length===0">
+          <option value="">-- Choose Sport --</option>
+          <option *ngFor="let sport of sports" [value]="sport.sport_id || sport.id">{{ sport.sport_name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Global Dates & Buffer -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+      <div>
+        <label for="global_start_date">Global Start Date:</label>
+        <input id="global_start_date" type="date" formControlName="global_start_date" class="form-input"/>
+      </div>
+      <div>
+        <label for="global_end_date">Global End Date:</label>
+        <input id="global_end_date" type="date" formControlName="global_end_date" class="form-input"/>
+      </div>
+      <div>
+        <label for="global_buffer_minutes">Global Buffer (min):</label>
+        <input id="global_buffer_minutes" type="number" formControlName="global_buffer_minutes" class="form-input"/>
+      </div>
+    </div>
+
+    <!-- Days Cards -->
+    <div formArrayName="days" class="space-y-3">
+      <div *ngFor="let dayGroup of daysFormArray.controls; let i = index" [formGroup]="getDayFormGroup(dayGroup)" class="panel p-4 border rounded">
+        
+        <!-- Header + Copy Button -->
+        <div class="flex justify-between items-center mb-3">
+          <h6 class="font-semibold">{{ getDayFormGroup(dayGroup).get('day')?.value }}</h6>
+          <button type="button" class="btn btn-outline-secondary text-sm px-2" (click)="copyPreviousDay(i)" [disabled]="i===0">
+            Copy from above
+          </button>
+        </div>
+
+        <!-- Price & Slot Duration -->
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-3">
+          <div>
+            <label>Price (per slot for this day):</label>
+            <input type="number" formControlName="price" class="form-input" placeholder="e.g., 500"/>
+          </div>
+          <div>
+            <label>Slot Duration (min for this day):</label>
+            <input type="number" formControlName="slot_duration" class="form-input" placeholder="e.g., 60"/>
+          </div>
+        </div>
+
+        <!-- Time Ranges -->
+        <div formArrayName="timeRanges" class="space-y-2">
+          <div *ngFor="let tr of getTimeRangesFormArray(dayGroup).controls; let j=index" [formGroupName]="j" class="flex flex-wrap gap-3 items-center">
+            
+            <div>
+              <label *ngIf="j===0">Start Time</label>
+              <input type="time" formControlName="start_time" class="form-input" (change)="generateDaySlots(getDayFormGroup(dayGroup))"/>
+            </div>
+
+            <div>
+              <label *ngIf="j===0">End Time</label>
+              <input type="time" formControlName="end_time" class="form-input" (change)="generateDaySlots(getDayFormGroup(dayGroup))"/>
+            </div>
+
+            <!-- Generated Slots -->
+            <div class="flex-auto min-w-[200px] flex flex-wrap gap-1 items-center">
+              <label *ngIf="j===0">Slots</label>
+              <span *ngIf="tr.get('generatedSlots')?.value.length===0" class="text-sm text-gray-500 italic">Please add time</span>
+              <span *ngFor="let slot of tr.get('generatedSlots')?.value" class="badge badge-outline-primary">{{ slot }}</span>
+            </div>
+
+            <!-- Add / Remove TimeRange -->
+            
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="mt-4">
+      <button type="submit" [disabled]="slotForm.invalid" class="btn btn-primary">
+        Generate Slots
+      </button>
+    </div>
+  </form>
+</div>
